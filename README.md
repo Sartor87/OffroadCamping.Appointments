@@ -13,11 +13,11 @@ A microservice-based appointments API for OffroadCamping. This repository contai
 
 ## Projects of interest
 
-- `OffroadCamping.Appointments.API` — ASP.NET Core Web API (Program entry).
-- `OffroadCamping.Appointments.Application` — Application layer (MediatR handlers, DTOs).
-- `OffroadCamping.Appointments.Infrastructure` — Data access, services (AuthService), DI registrations.
-- `OffroadCamping.Appointments.ServiceDefaults` — Aspire service defaults (service discovery, OpenTelemetry, healthchecks). This project contains the user secrets used for local development.
-- `OffroadCamping.Appointments.MigrationService` — Background service that applies EF Core migrations at startup.
+- `OffroadCamping.Appointments.API` â€” ASP.NET Core Web API (Program entry).
+- `OffroadCamping.Appointments.Application` â€” Application layer (MediatR handlers, DTOs).
+- `OffroadCamping.Appointments.Infrastructure` â€” Data access, services (AuthService), DI registrations.
+- `OffroadCamping.Appointments.ServiceDefaults` â€” Aspire service defaults (service discovery, OpenTelemetry, healthchecks). This project contains the user secrets used for local development.
+- `OffroadCamping.Appointments.MigrationService` â€” Background service that applies EF Core migrations at startup.
 
 ## Architecture & Design Patterns
 
@@ -40,7 +40,7 @@ The repository's primary purpose is to serve as a reference and demonstration of
 3. From the solution root run:
    - Using the .NET CLI:
      - `dotnet build`
-     - `dotnet run --project OffroadCamping.Appointments.API`
+     - `dotnet run --project OffroadCamping.Appointments.AppHost`
    - Or run the solution from Visual Studio.
 
 The API exposes health endpoints and OpenAPI in development. Health endpoints are mapped by `MapDefaultEndpoints()` and are enabled in Development only.
@@ -51,20 +51,20 @@ This repository uses the Aspire/service-defaults project to centralize local sec
 
 Required keys (examples and purpose):
 
-- `AppSettings:Token` — JWT signing secret used by the authentication service.
-- `AppSettings:Issuer` — JWT token issuer.
-- `AppSettings:Audience` — JWT token audience.
-- `ConnectionStrings:kurrentdb` — Event store / message db connection string.
-- `ConnectionStrings:AppointmentsDb` — Appointments database connection string.
-- `ConnectionStrings:IdentityDb` — Identity / Users database connection string.
-- `cache` — Redis connection string used by `AddStackExchangeRedisCache`.
-- `OTEL_EXPORTER_OTLP_ENDPOINT` (optional) — OpenTelemetry OTLP exporter endpoint.
-- `APPLICATIONINSIGHTS_CONNECTION_STRING` (optional) — Azure Monitor / Application Insights connection string.
+- `AppSettings:Token` â€” JWT signing secret used by the authentication service.
+- `AppSettings:Issuer` â€” JWT token issuer.
+- `AppSettings:Audience` â€” JWT token audience.
+- `ConnectionStrings:kurrentdb` â€” Event store / message db connection string.
+- `ConnectionStrings:AppointmentsDb` â€” Appointments database connection string.
+- `ConnectionStrings:IdentityDb` â€” Identity / Users database connection string.
+- `cache` â€” Redis connection string used by `AddStackExchangeRedisCache`.
+- `OTEL_EXPORTER_OTLP_ENDPOINT` (optional) â€” OpenTelemetry OTLP exporter endpoint.
+- `APPLICATIONINSIGHTS_CONNECTION_STRING` (optional) â€” Azure Monitor / Application Insights connection string.
 
 How to update user secrets
 
 - Visual Studio:
-  - Right-click the `OffroadCamping.Appointments.ServiceDefaults` project in Solution Explorer and choose __Manage User Secrets__. Add or update the keys in the displayed `secrets.json`.
+  - Right-click the `OffroadCamping.Appointments.AppHost` project in Solution Explorer and choose __Manage User Secrets__. Add or update the keys in the displayed `secrets.json`.
 
 - .NET CLI (from the repository root). Example commands:
   - Set the JWT signing secret:
@@ -94,8 +94,8 @@ Notes
 ## Telemetry and observability
 
 OpenTelemetry is configured in the `ServiceDefaults` project. By default the solution adds ASP.NET Core, HTTP client, and runtime instrumentation. Configure exporters via environment variables or user secrets:
-- `OTEL_EXPORTER_OTLP_ENDPOINT` — OTLP endpoint
-- `APPLICATIONINSIGHTS_CONNECTION_STRING` — Azure Monitor
+- `OTEL_EXPORTER_OTLP_ENDPOINT` â€” OTLP endpoint
+- `APPLICATIONINSIGHTS_CONNECTION_STRING` â€” Azure Monitor
 
 ## Authentication
 
