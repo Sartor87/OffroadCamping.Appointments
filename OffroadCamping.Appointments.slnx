@@ -3,6 +3,9 @@
     <Project Path="OffroadCamping.Appointments.AppHost/OffroadCamping.Appointments.AppHost.csproj" />
     <Project Path="OffroadCamping.Appointments.ServiceDefaults/OffroadCamping.Appointments.ServiceDefaults.csproj" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="OffroadCamping.Appointments.API/OffroadCamping.Appointments.API.csproj" />
   </Folder>
