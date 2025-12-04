@@ -1,0 +1,22 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.0.0">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>94ed6299-1036-4f87-a2f2-9ac4f098105b</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.0.2" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.0.2" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.KurrentDB" Version="13.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OffroadCamping.Appointments.API\OffroadCamping.Appointments.API.csproj" />
+    <ProjectReference Include="..\OffroadCamping.Appointments.MigrationService\OffroadCamping.Appointments.MigrationService.csproj" />
+  </ItemGroup>
+
+</Project>

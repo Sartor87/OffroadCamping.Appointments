@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Aspire/">
+    <Project Path="OffroadCamping.Appointments.AppHost/OffroadCamping.Appointments.AppHost.csproj" />
+    <Project Path="OffroadCamping.Appointments.ServiceDefaults/OffroadCamping.Appointments.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="OffroadCamping.Appointments.API/OffroadCamping.Appointments.API.csproj" />
+  </Folder>
+  <Folder Name="/src/Application/">
+    <Project Path="OffroadCamping.Appointments.Application/OffroadCamping.Appointments.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/Domain/">
+    <Project Path="OffroadCamping.Appointments.Domain/OffroadCamping.Appointments.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="OffroadCamping.Appointments.Infrastructure/OffroadCamping.Appointments.Infrastructure.csproj" />
+    <Project Path="OffroadCamping.Appointments.MigrationService/OffroadCamping.Appointments.MigrationService.csproj" />
+    <Project Path="OffroadCamping.Messaging.Contracts/OffroadCamping.Messaging.Contracts.csproj" />
+  </Folder>
+</Solution>
