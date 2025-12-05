@@ -5,8 +5,21 @@ var cache = builder.AddRedis("cache")
 
 var kurrentDB = builder.AddKurrentDB("kurrentdb", 2113);
 
+var rabbitMqUsername = builder.AddParameter("RabbitMqUsername", secret: true);
+var rabbitMqPassword = builder.AddParameter("RabbitMqPassword", secret: true);
+
+var rabbit = builder.AddRabbitMQ("rabbitmq", rabbitMqUsername, rabbitMqPassword)
+    .WithManagementPlugin();            // optional but super useful
+
 var saPassword = builder.Configuration["Sql:SaPassword"]
     ?? throw new InvalidOperationException("Missing SQL SA password in user secrets.");
+
+var issuer = builder.Configuration["AppSettings:Issuer"]
+        ?? throw new InvalidOperationException("Missing JWT Issuer in user secrets.");
+var audience = builder.Configuration["AppSettings:Audience"]
+        ?? throw new InvalidOperationException("Missing JWT Audience in user secrets.");
+var token = builder.Configuration["AppSettings:Token"]
+    ?? throw new InvalidOperationException("Missing JWT Token in user secrets.");
 
 var sql = builder
     .AddSqlServer("offroadcamping-appointments-sqlserver")
@@ -24,7 +37,9 @@ var migrations = builder.AddProject<Projects.OffroadCamping_Appointments_Migrati
     .WithReference(sql)
     .WithReference(appointmentsDb)
     .WithReference(identityDb)
-    .WaitForStart(sql);
+    .WaitForStart(appointmentsDb)
+    .WaitForStart(identityDb)
+    .WaitFor(sql);
 
 builder.AddProject<Projects.OffroadCamping_Appointments_API>("offroadcamping-appointments-api")
     .WithReference(appointmentsDb)
@@ -32,6 +47,10 @@ builder.AddProject<Projects.OffroadCamping_Appointments_API>("offroadcamping-app
     .WithReference(kurrentDB)
     .WithReference(migrations)
     .WithReference(cache)
+    .WithReference(rabbit)
+    .WithEnvironment("AppSettings:Issuer", issuer)
+    .WithEnvironment("AppSettings:Audience", audience)
+    .WithEnvironment("AppSettings:Token", token)
     .WaitForCompletion(migrations);
 
 builder.Build().Run();

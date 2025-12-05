@@ -1,37 +1,40 @@
 ﻿using KurrentDB.Client;
-using Microsoft.Extensions.DependencyInjection;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using OffroadCamping.Appointments.Infrastructure.Data;
-using OffroadCamping.Appointments.Application.Services.Contracts;
-using OffroadCamping.Appointments.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using OffroadCamping.Appointments.Application.Consumers;
 using OffroadCamping.Appointments.Application.Repositories;
+using OffroadCamping.Appointments.Application.Services.Contracts;
+using OffroadCamping.Appointments.Infrastructure.Data;
 using OffroadCamping.Appointments.Infrastructure.Persistence;
+using OffroadCamping.Appointments.Infrastructure.Services;
 using OpenTelemetry.Trace;
 
 namespace OffroadCamping.Appointments.Infrastructure
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
+        public static IServiceCollection AddMasstransit(this IServiceCollection services, string connection)
         {
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<AppointmentEmailSentConsumer>();
 
-                x.UsingRabbitMq((context, cfg) =>
+                x.UsingRabbitMq((context, factoryConfigurator) =>
                 {
-                    cfg.Host("localhost", "/", h =>
-                    {
-                        h.Username("appointments");
-                        h.Password("appointments");
-                    });
+                    factoryConfigurator.Host(new Uri(connection));
 
-                    cfg.ConfigureEndpoints(context);
+                    factoryConfigurator.ConfigureEndpoints(context);
+
                 });
             });
 
+            return services;
+        }
+
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
+        {
             services.AddTransient<ICalendarService, GoogleCalendarService>();
             services.AddScoped<IAuthService, AuthService>();
             //services.AddTelemetry();

@@ -20,4 +20,7 @@
     <Project Path="OffroadCamping.Appointments.MigrationService/OffroadCamping.Appointments.MigrationService.csproj" />
     <Project Path="OffroadCamping.Messaging.Contracts/OffroadCamping.Messaging.Contracts.csproj" />
   </Folder>
+  <Folder Name="/src/SharedKernel/">
+    <Project Path="OffroadCamping.Appointments.SharedKernel/OffroadCamping.Appointments.SharedKernel.csproj" Id="80003fa1-71a9-40c8-ad62-a8b1a075e5c0" />
+  </Folder>
 </Solution>
