@@ -1,10 +1,32 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OffroadCamping.Appointments.Application.Services.Contracts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace OffroadCamping.Appointments.Application
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, string validIssuer, string audience, byte[] token)
+        {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(o =>
+                {
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = validIssuer,
+                        ValidateAudience = true,
+                        ValidAudience = audience,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(token),
+                        ValidateIssuerSigningKey = true,
+                    };
+                });
+
+            return services;
+        }
+
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             // Add any HttpClients here

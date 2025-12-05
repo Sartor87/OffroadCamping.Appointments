@@ -1,11 +1,13 @@
-using System.Text.Json;
 using KurrentDB.Client;
 using MassTransit;
 using MediatR;
+using OffroadCamping.Appointments.Application.Appointments.Commands.CreateAppointment.BusinessRules;
 using OffroadCamping.Appointments.Application.Helpers;
 using OffroadCamping.Appointments.Application.Services.Contracts;
 using OffroadCamping.Appointments.Domain.Appointments.Events;
+using OffroadCamping.Appointments.SharedKernel.BusinessRulesEngine;
 using OffroadCamping.Messaging.Contracts.MessageContracts;
+using System.Text.Json;
 
 namespace OffroadCamping.Appointments.Application.Appointments.Commands.CreateAppointment;
 
@@ -31,7 +33,10 @@ public class CreateAppointmentHandler : IRequestHandler<CreateAppointmentCommand
 
         var appointmentId = Guid.NewGuid();
         activity?.AddTag("AppointmentId", appointmentId);
-        
+
+        BusinessRuleValidator.Validate(new PatientValidEmailRule(request.PatientEmail));
+        BusinessRuleValidator.Validate(new AppointmentStartDateRule(request.Start));
+
         // TODO: - I want to be able to attach OffroadCamping's appointmentId to this calendar implementation.
         var createdCalendarEvent = await _calendarService.CreateAppointmentAsync(
             request.Summary,

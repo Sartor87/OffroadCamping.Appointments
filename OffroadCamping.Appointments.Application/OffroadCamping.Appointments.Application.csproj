@@ -7,16 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Google.Apis.Calendar.v3" Version="1.72.0.3953" />
     <PackageReference Include="KurrentDB.Client" Version="1.2.0" />
     <PackageReference Include="MassTransit" Version="8.5.7" />
     <PackageReference Include="MediatR" Version="14.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OffroadCamping.Appointments.Domain\OffroadCamping.Appointments.Domain.csproj" />
+    <ProjectReference Include="..\OffroadCamping.Appointments.SharedKernel\OffroadCamping.Appointments.SharedKernel.csproj" />
     <ProjectReference Include="..\OffroadCamping.Messaging.Contracts\OffroadCamping.Messaging.Contracts.csproj" />
   </ItemGroup>
 

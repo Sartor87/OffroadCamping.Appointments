@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using OffroadCamping.Appointments.Application.Appointments.Commands.CreateAppointment;
 using OffroadCamping.Appointments.Application.Appointments.Queries.GetAppointments;
 using OffroadCamping.Appointments.Application.Dtos.Security;
@@ -34,6 +35,7 @@ public class AppointmentsController : ControllerBase
     /// <returns>A cached response if appointments have not changed.</returns>
     [Authorize(Roles = "doctor")]
     [HttpGet("facilities/{facilityName}")]
+    [OutputCache(Duration = 5)]
     public async Task<ActionResult> GetAppointments([FromRoute] string facilityName)
     {
         using var activity = ActivitySourceHelper.ActivitySource.StartActivity();
