@@ -2,6 +2,8 @@
 
 A microservice-based appointments API for OffroadCamping. This repository contains multiple projects (API, Application, Infrastructure, ServiceDefaults / Aspire helpers, and a MigrationService) and includes defaults for service discovery, resilience, health checks, OpenTelemetry, and authentication.
 
+<img alt="solution_diagram" src="Architecture/Diagrams/diagram-export-24-12-2025-11_28_02.png" />
+
 ## Requirements
 
 - .NET 10 SDK
