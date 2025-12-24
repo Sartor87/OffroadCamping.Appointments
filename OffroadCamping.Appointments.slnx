@@ -1,4 +1,13 @@
 <Solution>
+  <Folder Name="/Architecture/" />
+  <Folder Name="/Architecture/ADR/">
+    <File Path="Architecture/ADR/0001-record-architecture-decisions.adoc" />
+    <File Path="Architecture/ADR/0002-use-multiple-projects.adoc" />
+    <File Path="Architecture/ADR/0003-use-clean-architecture.adoc" />
+    <File Path="Architecture/ADR/0004-use-aspire.adoc" />
+    <File Path="Architecture/ADR/0005-select-integration-style-between-webapi-services.adoc" />
+  </Folder>
+  <Folder Name="/Architecture/Diagrams/" />
   <Folder Name="/Aspire/">
     <Project Path="OffroadCamping.Appointments.AppHost/OffroadCamping.Appointments.AppHost.csproj" />
     <Project Path="OffroadCamping.Appointments.ServiceDefaults/OffroadCamping.Appointments.ServiceDefaults.csproj" />

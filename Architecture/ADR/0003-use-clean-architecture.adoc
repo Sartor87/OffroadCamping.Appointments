@@ -1,0 +1,228 @@
+﻿= 3. Introducing Clean Architecture Boundaries for the OffroadCamping.Appointments Service
+
+Date: 2025-12-11
+
+== Problem
+
+The OffroadCamping.Appointments service is built on .NET Aspire with a multi-layered architecture, consisting of:
+
+- `OffroadCamping.Appointments.Domain` — core business logic, entities, and domain events
+- `OffroadCamping.Appointments.Application` — CQRS handlers, MediatR commands/queries, and application services
+- `OffroadCamping.Appointments.Infrastructure` — Entity Framework persistence, event store adapters, Redis caching, and external service integrations
+- `OffroadCamping.Appointments.API` — HTTP endpoints, JWT authentication, and request/response handling
+- `OffroadCamping.Appointments.MigrationService` — database schema migrations and initialization
+- `OffroadCamping.Appointments.ServiceDefaults` — shared configuration, OpenTelemetry, health checks, and cross-cutting concerns
+
+As the service evolves to support event sourcing, CQRS, and complex appointment workflows, several architectural challenges have emerged:
+
+- Domain leakage: Domain entities risk being referenced directly in API responses, creating tight coupling and version lock.
+- Infrastructure concerns bleeding into upper layers: Entity Framework types or domain event details could inadvertently leak into API contracts.
+- Inconsistent boundaries: Without explicit contracts, the API and Application layers risk interpreting domain concepts differently.
+- Lack of enforceable architectural rules: Without automated governance, accidental violations (e.g., API referencing Infrastructure DbContext directly) are possible.
+- Event sourcing and CQRS complexity: Clear boundaries between command handling, event persistence, and query execution are essential.
+
+To support long-term maintainability, testability, and team scalability, we need explicit Clean Architecture boundaries aligned with Domain-Driven Design and event-driven principles.
+
+== Decision
+
+We will apply Clean Architecture boundaries across the OffroadCamping.Appointments solution by establishing:
+
+=== 1. A strict layering model
+
+Domain
+  ↑
+Application (MediatR Handlers, Services)
+  ↑
+Infrastructure (Persistence, Event Store, Redis, External Services)
+  ↑
+API (Controllers, DTOs, Authentication)
+  ↑
+ServiceDefaults (Cross-cutting Concerns)
+
+MigrationService (Depends on Infrastructure, runs independently)
+
+*Layering Rules:*
+
+- *Domain*
+  - Contains entities, value objects, aggregates, domain events, and domain services
+  - No dependencies on Application, Infrastructure, API, or external libraries (except BCL)
+  - Pure business logic with no I/O or framework concerns
+  - Example: `User`, `Appointment`, domain events like `AppointmentScheduledEvent`
+
+- *Application*
+  - Implements CQRS via MediatR command and query handlers
+  - Orchestrates domain logic and persistence operations
+  - Depends on Domain only
+  - Must not directly reference Infrastructure DbContext or external services; uses abstraction/interface contracts
+  - Contains application DTOs (distinct from API DTOs) if needed
+  - Example: `ScheduleAppointmentCommand`, `GetAppointmentsByUserQuery`
+
+- *Infrastructure*
+  - Implements persistence (Entity Framework DbContext, database migrations)
+  - Adapts event store for event sourcing
+  - Provides repository implementations and data access patterns
+  - Implements caching via Redis (cache-aside pattern)
+  - Integrates external services (SMTP, OAuth, messaging)
+  - Depends on Domain and Application
+  - Must not depend on API layer
+  - Exposes contracts/interfaces that Application consumes
+
+- *API*
+  - Exposes HTTP REST endpoints and controllers
+  - Handles request/response serialization via DTOs (distinct from domain entities)
+  - Implements JWT authentication and authorization policies
+  - Delegates business logic to Application (MediatR) handlers
+  - Depends on Domain, Application, and Infrastructure (for DI setup)
+  - Must not contain business logic; it is a presentation boundary
+  - Example: `AppointmentsController` dispatches commands/queries via MediatR
+
+- *ServiceDefaults*
+  - Defines shared configuration, logging, tracing, metrics, health checks
+  - Provides extension methods for service registration (OpenTelemetry, resilience, service discovery)
+  - Houses user secrets for local development
+  - Does not contain business logic
+  - Referenced by all projects
+
+- *MigrationService*
+  - Background worker that applies Entity Framework migrations at startup
+  - Depends on Infrastructure (DbContext access) and Domain
+  - Runs independently; no direct dependency on API
+
+=== 2. A Contracts layer (DTOs) in the API
+
+To prevent domain leakage and enable API versioning independent of domain evolution, the API exposes DTOs instead of domain entities.
+
+*DTO Categories:*
+
+- *Request DTOs*: Define input contracts for commands (e.g., `ScheduleAppointmentRequestDto`)
+- *Response DTOs*: Define output contracts for queries and command results (e.g., `AppointmentResponseDto`, `UserResponseDto`)
+- *Domain Event DTOs*: Represent serialized domain events if exposed via webhooks or event streams
+
+*DTO Characteristics:*
+
+- Immutable (record types or sealed classes)
+- Serialization-friendly (no circular references, simple types)
+- Versioned (e.g., `V1.ScheduleAppointmentRequestDto`)
+- Decoupled from domain entity structure; mapped via AutoMapper or manual mapping
+- Domain entities are never exposed directly in HTTP responses
+
+*Mapping Pattern:*
+
+[source, csharp]
+----
+// Domain entity (internal)
+public class Appointment { ... }
+
+// Request DTO (API contract)
+public record ScheduleAppointmentRequestDto(Guid UserId, DateTime DateTime, string Reason);
+
+// Response DTO (API contract)
+public record AppointmentResponseDto(Guid Id, Guid UserId, DateTime DateTime, string Reason, string Status);
+
+// MediatR Command (Application)
+public record ScheduleAppointmentCommand(Guid UserId, DateTime DateTime, string Reason) : IRequest<Guid>;
+
+// Mapping in Handler or Mapper
+var command = new ScheduleAppointmentCommand(requestDto.UserId, requestDto.DateTime, requestDto.Reason);
+----
+
+=== 3. Architecture tests enforcing boundaries
+
+Using NetArchTest or similar tools, we enforce:
+
+- Domain must not reference Application, Infrastructure, API, or ServiceDefaults
+- Application must not reference Infrastructure implementations directly; depends only on Domain and contracts/interfaces
+- Infrastructure must not reference API
+- API must depend on Domain, Application, and Infrastructure (via DI)
+- ServiceDefaults is referenced by all projects but contains no business logic
+- MigrationService depends only on Infrastructure and Domain
+- Only Infrastructure may reference Entity Framework Core, MongoDB, or external SDKs
+- Only API may reference ASP.NET Core MVC, controllers, and HTTP concerns
+- Only ServiceDefaults may reference OpenTelemetry and Aspire libraries
+- Only Application may reference MediatR
+
+These tests run in CI and block violations before merge.
+
+=== 4. Event Sourcing & CQRS alignment with boundaries
+
+- *Events*: Defined in Domain as domain events; Infrastructure persists to event store; Application handlers publish/subscribe
+- *Commands*: Application layer MediatR handlers execute commands, which trigger domain logic and produce events
+- *Queries*: Application layer MediatR handlers execute queries; Infrastructure retrieves read models from database or cache
+- *Saga/Workflow*: Long-running processes managed in Application layer, delegating to domain and Infrastructure
+
+Example flow:
+
+[source]
+----
+API Controller (ScheduleAppointmentRequestDto)
+  → MediatR ScheduleAppointmentCommand (Application)
+    → Domain: Create Appointment, raise AppointmentScheduledEvent
+    → Infrastructure: Persist to database, append event to event store
+    → Redis: Invalidate cached user appointments
+  → Return AppointmentResponseDto
+----
+
+=== 5. Aspire service orchestration boundaries
+
+- Secrets flow from `secrets.json` (local) or environment variables (CI/CD) → ServiceDefaults → accessed by all projects
+- `AppSettings:Token`, `ConnectionStrings:*`, `cache` are set at the ServiceDefaults level
+- API and MigrationService receive connection strings via dependency injection configured in ServiceDefaults
+- OpenTelemetry exporters are centralized in ServiceDefaults
+- Health checks are mapped in API via `MapDefaultEndpoints()` from ServiceDefaults
+- No project reads configuration directly; all config flows through ServiceDefaults registration
+
+== Consequences
+
+=== Positive
+
+- Clear separation of concerns: Each layer has a single responsibility; dependencies flow downward only (Domain ← Application ← Infrastructure ← API).
+- Improved testability: Domain can be tested in isolation; Application handlers can be tested with mocks; Infrastructure with integration tests.
+- Better maintainability: DTOs decouple API evolution from domain evolution; domain changes don't break API clients.
+- Safer refactoring: Architecture tests catch violations early; developers understand boundaries before making changes.
+- Scalability: Teams can work independently on different layers; new features follow the same patterns.
+- Event-driven ready: Event sourcing and CQRS patterns enable future evolution toward event streaming and saga choreography.
+- Framework independence: Domain logic is pure .NET with no framework lock-in; easier to port or test without ASP.NET.
+
+=== Negative
+
+- More boilerplate: DTOs, mappers, and application handlers introduce additional files and code.
+- Initial overhead: Setting up architecture tests, DTO mappings, and handler patterns requires effort.
+- Stricter rules: Developers must understand and follow the layering model and CQRS patterns.
+- CQRS complexity: Separating commands and queries adds conceptual overhead; may feel over-engineered for simple CRUD.
+
+== Alternatives Considered
+
+1. **Allowing domain entities to be shared across layers**
+   - Rejected because it creates tight coupling, makes versioning difficult, and risks leaking persistence details into API responses.
+
+2. **Using a single DTO for all use cases**
+   - Rejected because different endpoints have different contract requirements; a single DTO becomes bloated and conflates concerns.
+
+3. **Infrastructure models directly in API**
+   - Rejected because it leaks Entity Framework types and database concerns (e.g., lazy loading, change tracking) into the HTTP boundary.
+
+4. **No architecture tests**
+   - Rejected because accidental violations (e.g., API referencing DbContext directly) become expensive to fix later.
+
+5. **Monolithic Application layer without CQRS**
+   - Rejected because CQRS makes command and query intent explicit; MediatR handlers are easier to test and maintain than god-service patterns.
+
+== Decision Outcome
+
+The Clean Architecture approach aligned with Domain-Driven Design, event sourcing, and CQRS is now the official architectural standard for the OffroadCamping.Appointments service.
+
+All new features must:
+
+- Define domain logic in the Domain layer with clear aggregates and domain events
+- Implement application orchestration via MediatR commands and queries
+- Persist via Infrastructure layer repositories and event store adapters
+- Expose contracts via DTOs in the API layer
+- Satisfy architecture tests before merge
+
+This ADR will be revisited if:
+
+- The service becomes a distributed microservices ecosystem requiring shared contracts or schemas
+- Event streaming (Kafka, RabbitMQ) is introduced for cross-service communication
+- Additional read models or CQRS projections are required
+- Saga patterns become necessary for long-running workflows
+- The service is split into multiple bounded contexts or sub-domains
