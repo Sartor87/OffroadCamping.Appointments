@@ -280,13 +280,14 @@ workspace {
             appointmentsSystem.sharedKernel -> appointmentsSystem.appointmentCQRS "Generates AppointmentScheduled event"
             appointmentsSystem.appointmentCQRS -> appointmentsSystem.cacheService "Checks cache for existing data"
             {
-
+                // Cache Hit
                 {
                     appointmentsSystem.cacheService -> appointmentsSystem.redis "Cache returns data"
                     appointmentsSystem.redis -> appointmentsSystem.cacheService "Returns appointments list"
                     appointmentsSystem.cacheService -> appointmentsSystem.appointmentCQRS "Returns cached result"
                 }
             
+                // Cache Miss
                 {
                     appointmentsSystem.cacheService -> appointmentsSystem.appointmentRepository "Queries database"
                     appointmentsSystem.appointmentRepository -> appointmentsSystem.appointmentsDbContext "Uses DbContext for write"
@@ -296,15 +297,18 @@ workspace {
                     appointmentsSystem.cacheService -> appointmentsSystem.appointmentCQRS "Returns database result"
                 }
             }
+            // Synchronous Event Sourcing and Notification Flow
             appointmentsSystem.appointmentCQRS -> appointmentsSystem.appointmentCreatedEvent "Updates checkpoint for event stream"
-            appointmentsSystem.appointmentCreatedEvent -> appointmentsSystem.eventStore "Persists event to"
-            appointmentsSystem.eventStore -> appointmentsSystem.kurrentdb "Appends to event log"
-            appointmentsSystem.eventStore -> appointmentsSystem.rabbitmq "Publishes event to"
-            appointmentsSystem.appointmentCQRS -> appointmentsSystem.appointmentCreatedEvent "Publishes event"
-            appointmentsSystem.rabbitmq -> appointmentsSystem.eventStore "Delivers event to consumer"
-            appointmentsSystem.eventStore -> appointmentsSystem.appointmentEmailSentEvent "Publishes email sent event"
-            appointmentsSystem.appointmentEmailSentEvent -> appointmentsSystem.cacheService "Invalidates appointment cache"
-            appointmentsSystem.cacheService -> appointmentsSystem.redis "Clears cached data"
+            {
+                appointmentsSystem.appointmentCreatedEvent -> appointmentsSystem.eventStore "Persists event to"
+                appointmentsSystem.eventStore -> appointmentsSystem.kurrentdb "Appends to event log"
+                appointmentsSystem.eventStore -> appointmentsSystem.rabbitmq "Publishes event to"
+                appointmentsSystem.appointmentCQRS -> appointmentsSystem.appointmentCreatedEvent "Publishes event"
+                appointmentsSystem.rabbitmq -> appointmentsSystem.eventStore "Delivers event to consumer"
+                appointmentsSystem.eventStore -> appointmentsSystem.appointmentEmailSentEvent "Publishes email sent event"
+                appointmentsSystem.appointmentEmailSentEvent -> appointmentsSystem.cacheService "Invalidates appointment cache"
+                //appointmentsSystem.cacheService -> appointmentsSystem.redis "Clears cached data"
+            }
 
             autolayout lr
         }
