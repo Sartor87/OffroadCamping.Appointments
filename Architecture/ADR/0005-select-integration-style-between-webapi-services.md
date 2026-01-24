@@ -1,8 +1,12 @@
-﻿= **5. Selecting Integration Style Between Web and API Services**
+# 5. Selecting Integration Style Between Web and API Services
 
-**Date:** 2025-12-11
+## Date: 2025-12-11
 
-== **Problem**
+## Status
+
+Accepted
+
+## Problem
 
 The OffroadCamping.Appointments platform consists of two independent services:  
 - **OffroadCamping.Appointments.API** — exposes job operations  
@@ -10,7 +14,7 @@ The OffroadCamping.Appointments platform consists of two independent services:
 
 These services must exchange data efficiently. Traditional REST polling caused delays, unnecessary load, and poor UX for long-running job retrieval. We evaluated several integration styles: REST, gRPC, WebSockets, shared models, and message-based integration. Challenges included avoiding tight coupling, supporting browsers, and enabling real-time updates without complex infrastructure.
 
-== **Decision**
+## Decision
 
 We will use **REST over HTTP** for commands and queries, and **Server-Sent Events (SSE)** for real-time job retrieval.
 
@@ -21,7 +25,7 @@ Key points:
 - Web listens to SSE using `EventSource` or Blazor streaming APIs.  
 - Aspire service binding URIs (`https+http://apiservice`) provide service discovery.
 
-== **Consequences**
+## Consequences
 
 **Positive:**  
 - Real-time UI updates without polling  
@@ -34,13 +38,13 @@ Key points:
 - SSE is one-way only (server → client)  
 - Requires keeping long-lived HTTP connections open  
 
-== **Alternatives Considered**
+## Alternatives Considered
 
 - **Polling** — inefficient and slow  
 - **WebSockets** — more complex than needed  
 - **gRPC** — not browser-friendly  
 - **Shared domain models** — rejected to avoid coupling  
 
-== **Outcome**
+## Outcome
 
 REST + SSE is the official integration style between Web and API services. All future real-time features should use SSE unless requirements change.

@@ -1,8 +1,12 @@
-﻿= 3. Introducing Clean Architecture Boundaries for the OffroadCamping.Appointments Service
+# 3. Introducing Clean Architecture Boundaries for the OffroadCamping.Appointments Service
 
-Date: 2025-12-11
+## Date: 2025-12-11
 
-== Problem
+## Status
+
+Accepted
+
+## Problem
 
 The OffroadCamping.Appointments service is built on .NET Aspire with a multi-layered architecture, consisting of:
 
@@ -23,11 +27,11 @@ As the service evolves to support event sourcing, CQRS, and complex appointment 
 
 To support long-term maintainability, testability, and team scalability, we need explicit Clean Architecture boundaries aligned with Domain-Driven Design and event-driven principles.
 
-== Decision
+## Decision
 
 We will apply Clean Architecture boundaries across the OffroadCamping.Appointments solution by establishing:
 
-=== 1. A strict layering model
+### 1. A strict layering model
 
 Domain
   ↑
@@ -88,7 +92,7 @@ MigrationService (Depends on Infrastructure, runs independently)
   - Depends on Infrastructure (DbContext access) and Domain
   - Runs independently; no direct dependency on API
 
-=== 2. A Contracts layer (DTOs) in the API
+### 2. A Contracts layer (DTOs) in the API
 
 To prevent domain leakage and enable API versioning independent of domain evolution, the API exposes DTOs instead of domain entities.
 
@@ -126,7 +130,7 @@ public record ScheduleAppointmentCommand(Guid UserId, DateTime DateTime, string 
 var command = new ScheduleAppointmentCommand(requestDto.UserId, requestDto.DateTime, requestDto.Reason);
 ----
 
-=== 3. Architecture tests enforcing boundaries
+### 3. Architecture tests enforcing boundaries
 
 Using NetArchTest or similar tools, we enforce:
 
@@ -143,7 +147,7 @@ Using NetArchTest or similar tools, we enforce:
 
 These tests run in CI and block violations before merge.
 
-=== 4. Event Sourcing & CQRS alignment with boundaries
+### 4. Event Sourcing & CQRS alignment with boundaries
 
 - *Events*: Defined in Domain as domain events; Infrastructure persists to event store; Application handlers publish/subscribe
 - *Commands*: Application layer MediatR handlers execute commands, which trigger domain logic and produce events
@@ -162,7 +166,7 @@ API Controller (ScheduleAppointmentRequestDto)
   → Return AppointmentResponseDto
 ----
 
-=== 5. Aspire service orchestration boundaries
+### 5. Aspire service orchestration boundaries
 
 - Secrets flow from `secrets.json` (local) or environment variables (CI/CD) → ServiceDefaults → accessed by all projects
 - `AppSettings:Token`, `ConnectionStrings:*`, `cache` are set at the ServiceDefaults level
@@ -171,9 +175,9 @@ API Controller (ScheduleAppointmentRequestDto)
 - Health checks are mapped in API via `MapDefaultEndpoints()` from ServiceDefaults
 - No project reads configuration directly; all config flows through ServiceDefaults registration
 
-== Consequences
+## Consequences
 
-=== Positive
+### Positive
 
 - Clear separation of concerns: Each layer has a single responsibility; dependencies flow downward only (Domain ← Application ← Infrastructure ← API).
 - Improved testability: Domain can be tested in isolation; Application handlers can be tested with mocks; Infrastructure with integration tests.
@@ -183,14 +187,14 @@ API Controller (ScheduleAppointmentRequestDto)
 - Event-driven ready: Event sourcing and CQRS patterns enable future evolution toward event streaming and saga choreography.
 - Framework independence: Domain logic is pure .NET with no framework lock-in; easier to port or test without ASP.NET.
 
-=== Negative
+### Negative
 
 - More boilerplate: DTOs, mappers, and application handlers introduce additional files and code.
 - Initial overhead: Setting up architecture tests, DTO mappings, and handler patterns requires effort.
 - Stricter rules: Developers must understand and follow the layering model and CQRS patterns.
 - CQRS complexity: Separating commands and queries adds conceptual overhead; may feel over-engineered for simple CRUD.
 
-== Alternatives Considered
+## Alternatives Considered
 
 1. **Allowing domain entities to be shared across layers**
    - Rejected because it creates tight coupling, makes versioning difficult, and risks leaking persistence details into API responses.
@@ -207,7 +211,7 @@ API Controller (ScheduleAppointmentRequestDto)
 5. **Monolithic Application layer without CQRS**
    - Rejected because CQRS makes command and query intent explicit; MediatR handlers are easier to test and maintain than god-service patterns.
 
-== Decision Outcome
+## Decision Outcome
 
 The Clean Architecture approach aligned with Domain-Driven Design, event sourcing, and CQRS is now the official architectural standard for the OffroadCamping.Appointments service.
 

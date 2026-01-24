@@ -18,6 +18,8 @@ A microservice-based appointments API for OffroadCamping. This repository contai
 - `OffroadCamping.Appointments.API` — ASP.NET Core Web API (Program entry).
 - `OffroadCamping.Appointments.Application` — Application layer (MediatR handlers, DTOs).
 - `OffroadCamping.Appointments.Infrastructure` — Data access, services (AuthService), DI registrations.
+- `OffroadCamping.Appointments.Domain` - Domain entities and domain events.
+- `OffroadCamping.Appointments.SharedKernel` - Shared dependencies such as validation rules and system clock.
 - `OffroadCamping.Appointments.ServiceDefaults` — Aspire service defaults (service discovery, OpenTelemetry, healthchecks). This project contains the user secrets used for local development.
 - `OffroadCamping.Appointments.MigrationService` — Background service that applies EF Core migrations at startup.
 
