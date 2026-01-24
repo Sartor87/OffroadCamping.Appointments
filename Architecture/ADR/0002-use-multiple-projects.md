@@ -1,7 +1,12 @@
-﻿= 2. Introducing a Multi-Project Solution Structure for the OffroadCamping.Appointments Service
-** Date: 2025-12-11 **
+# 2. Introducing a Multi-Project Solution Structure for the OffroadCamping.Appointments Service
 
-== Problem
+## Date: 2025-12-11
+
+## Status
+
+Accepted
+
+## Problem
 As the OffroadCamping.Appointments service grew to support appointment management, user authentication, and event-driven workflows, a single-project or loosely structured solution became insufficient. The service now includes:
 
 - Domain logic and entities
@@ -24,11 +29,11 @@ Operating all of this within minimal project boundaries creates several challeng
 
 To support maintainability, modularity, and long-term team scalability, the service requires a well-defined multi-project structure aligned with domain-driven design and event-driven architecture patterns.
 
-== Decision
+## Decision
 
 We will adopt a multi-project solution structure where each project has a clear responsibility and explicit boundaries, following SOLID principles and supporting event sourcing and CQRS patterns.
 
-=== 1. Solution Structure
+### 1. Solution Structure
 
 OffroadCamping.Appointments.sln
 │
@@ -49,7 +54,7 @@ OffroadCamping.Appointments.sln
     ├── ADR
     └── Diagrams
 
-=== 2. Project Responsibilities
+### 2. Project Responsibilities
 
 ** ServiceDefaults (Aspire) **
 - Centralizes shared configuration and startup logic for the service
@@ -101,7 +106,7 @@ OffroadCamping.Appointments.sln
 - Depends on Infrastructure and Domain
 - Can run independently or as part of container startup
 
-=== 3. Architectural Patterns & Principles
+### 3. Architectural Patterns & Principles
 
 ** Event Sourcing **
 - Domain events are captured and persisted in an event store
@@ -134,7 +139,7 @@ OffroadCamping.Appointments.sln
 - Environment variables and user secrets flow through ServiceDefaults
 - Observability (logs, traces, metrics) is centralized via OpenTelemetry
 
-=== 4. Dependency Flow
+### 4. Dependency Flow
 
 Domain
   ↑
@@ -148,7 +153,7 @@ ServiceDefaults ← (used by all projects for cross-cutting concerns)
 
 MigrationService ← (depends on Infrastructure, Domain; runs independently)
 
-=== 5. Aspire & Service Orchestration
+### 5. Aspire & Service Orchestration
 
 - ServiceDefaults is referenced by all projects for configuration defaults
 - API service is registered as an Aspire resource
@@ -158,7 +163,7 @@ MigrationService ← (depends on Infrastructure, Domain; runs independently)
 - Health checks are mapped for Appointments endpoints (/health, /alive)
 - OpenTelemetry exporters are configured via environment or user secrets
 
-=== 6. Enforced Boundaries (Architecture Tests)
+### 6. Enforced Boundaries (Architecture Tests)
 
 Architecture tests ensure:
 - Domain has no dependencies on Infrastructure, API, or ServiceDefaults
@@ -170,7 +175,7 @@ Architecture tests ensure:
 - Only Infrastructure may reference Entity Framework Core and external services
 - Only API may reference ASP.NET Core, MediatR, and HTTP concerns
 
-=== 7. Consequences
+### 7. Consequences
 
 ** Positive **
 - Clear modularity: Each project has a single responsibility and well-defined boundary.
@@ -188,14 +193,14 @@ Architecture tests ensure:
 - More boilerplate: DTOs, mappers, and cross-project interfaces introduce additional code.
 - Learning curve: CQRS, event sourcing, and cache-aside patterns require developer understanding.
 
-=== 8. Alternatives Considered
+### 8. Alternatives Considered
 
 - Single-project monolith: Rejected because it leads to tight coupling, difficult testing, and poor modularity.
 - Two-layer architecture (API + Infrastructure): Rejected because it conflates domain logic with infrastructure, making event sourcing difficult.
 - Three-layer architecture (API, Business, Data): Rejected because it lacks explicit application orchestration (CQRS) and event handling.
 - Vertical slice architecture: Rejected because the service is horizontally layered (Domain → Application → Infrastructure → API) and shares event sourcing patterns across slices.
 
-=== 9. Future Considerations
+### 9. Future Considerations
 
 This ADR will be revisited if:
 
@@ -205,6 +210,6 @@ This ADR will be revisited if:
 - Multiple API versions or consumer-specific adapters are introduced
 - Separate services are spun off from the monolith (event processing, notifications, etc.)
 
-=== 10. Decision Outcome
+### 10. Decision Outcome
 
 The multi-project structure aligned with Domain-Driven Design, CQRS, event sourcing, and SOLID principles is now the official architectural standard for the OffroadCamping.Appointments service. All new features must follow this structure, and all changes must maintain the enforced architectural boundaries.
