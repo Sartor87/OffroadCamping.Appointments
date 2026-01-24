@@ -7,25 +7,29 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis" Version="1.73.0" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
-    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.72.0.3953" />
-    <PackageReference Include="Google.Apis.Core" Version="1.73.0" />
-    <PackageReference Include="KurrentDB.Client" Version="1.2.0" />
-    <PackageReference Include="MassTransit" Version="8.5.7" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+    <PackageReference Include="Google.Apis" />
+    <PackageReference Include="Google.Apis.Auth" />
+    <PackageReference Include="Google.Apis.Calendar.v3" />
+    <PackageReference Include="Google.Apis.Core" />
+    <PackageReference Include="KurrentDB.Client" />
+    <PackageReference Include="MassTransit" />
+    <PackageReference Include="MassTransit.RabbitMQ" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
-    <PackageReference Include="OpenTelemetry" Version="1.14.0" />
-    <PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="OpenTelemetry" />
+    <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\OffroadCamping.Appointments.Application\OffroadCamping.Appointments.Application.csproj" />
     <ProjectReference Include="..\OffroadCamping.Appointments.Domain\OffroadCamping.Appointments.Domain.csproj" />
