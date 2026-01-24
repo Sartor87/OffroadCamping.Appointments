@@ -1,0 +1,60 @@
+<Project>
+  <!-- Central package version management for the OffroadCamping.Appointments solution.
+       Place this file at the repository root (same folder as the .sln). -->
+  <ItemGroup>
+    <!-- Core / cross-project -->
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0" />
+
+    <!-- ASP.NET / Authentication / OpenAPI -->
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication" Version="2.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+
+    <!-- Entity Framework -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+
+    <!-- OpenTelemetry -->
+    <PackageVersion Include="OpenTelemetry" Version="1.14.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.13.1" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.13.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.13.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.13.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.13.0" />
+
+    <!-- Messaging / transport -->
+    <PackageVersion Include="MassTransit" Version="8.5.7" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.7" />
+    <PackageVersion Include="RabbitMQ.Client" Version="7.2.0" />
+
+    <!-- MediatR / validation -->
+    <PackageVersion Include="MediatR" Version="14.0.0" />
+    <PackageVersion Include="FluentValidation" Version="12.1.1" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+
+    <!-- Google APIs -->
+    <PackageVersion Include="Google.Apis" Version="1.73.0" />
+    <PackageVersion Include="Google.Apis.Auth" Version="1.73.0" />
+    <PackageVersion Include="Google.Apis.Calendar.v3" Version="1.72.0.3953" />
+    <PackageVersion Include="Google.Apis.Core" Version="1.73.0" />
+
+    <!-- Redis / cache -->
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
+
+    <!-- Misc / tooling -->
+    <PackageVersion Include="KurrentDB.Client" Version="1.2.0" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.11.0" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+
+    <!-- Aspire / AppHost -->
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.0.2" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.0.2" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.0.2" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.KurrentDB" Version="13.0.0" />
+  </ItemGroup>
+</Project>
