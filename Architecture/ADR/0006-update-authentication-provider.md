@@ -10,7 +10,7 @@ Proposed / Pending decision
 
 The project currently relies on a locally-managed Identity Provider (IdP) for JWT issuance and user management. We are evaluating whether to continue maintaining an internal IdP or adopt a third-party solution (self-hosted or managed) to reduce operational burden and improve features such as federation, SSO, and compliance.
 
-Reference: Kiril Iliev's analysis comparing Keycloak and Okta — https://www.linkedin.com/pulse/why-keycloak-outperforms-okta-regulated-hybrid-microsoft-kiril-iliev-ugexf/?trackingId=QpNF%2FiEQHC0XJB2CCJYqYw%3D%3D
+Reference: [Kiril Iliev's analysis comparing Keycloak and Okta](https://www.linkedin.com/pulse/why-keycloak-outperforms-okta-regulated-hybrid-microsoft-kiril-iliev-ugexf/?trackingId=QpNF%2FiEQHC0XJB2CCJYqYw%3D%3D)
 
 ## Problem
 
