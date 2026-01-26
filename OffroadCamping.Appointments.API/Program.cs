@@ -1,9 +1,9 @@
+using OffroadCamping.Appointments.API.Endpoints;
 using OffroadCamping.Appointments.Application;
 using OffroadCamping.Appointments.Infrastructure;
-using OffroadCamping.Appointments.SharedKernel.ErrorHandling;
 using OffroadCamping.Appointments.SharedKernel.Core.SystemClock;
+using OffroadCamping.Appointments.SharedKernel.ErrorHandling;
 using Scalar.AspNetCore;
-using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,10 +12,10 @@ builder.AddServiceDefaults();
 
 // Add services to the container.
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("OffroadCamping.Appointments.Application")));
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(AssemblyMarker).Assembly));
 
 builder.Services.AddOutputCache();
 
@@ -26,7 +26,6 @@ builder.Services.AddAuthorization(options =>
     {
         policy.RequireRole("patient");
     });
-
     options.AddPolicy("Doctor", policy =>
     {
         policy.RequireRole("doctor");
@@ -36,8 +35,8 @@ builder.Services.AddAuthorization(options =>
 // JWT Authentication
 builder.Services
     .AddJwtAuthentication(
-        builder.Configuration["AppSettings:Issuer"]!, 
-        builder.Configuration["AppSettings:Audience"]!, 
+        builder.Configuration["AppSettings:Issuer"]!,
+        builder.Configuration["AppSettings:Audience"]!,
         Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!))
     .AddApplicationServices()
     .AddEventStore(builder.Configuration.GetConnectionString("kurrentdb")!);
@@ -80,8 +79,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
-
 app.UseOutputCache();
+
+app.MapAppointmentsEndpoints();
+app.MapAuthEndpoints();
 
 app.Run();

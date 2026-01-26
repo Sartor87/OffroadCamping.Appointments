@@ -19,8 +19,9 @@ This section contains concise architecture documentation for the OffroadCamping.
 - (Optional) Redis (for distributed cache) 
 - (Optional) SQL databases for Appointments and Identity
 - (Optional) KurrentDB or another event store for event sourcing
+- (Optional) RabbitMQ or another message broker for asynchronous messaging
 
-## Projects of interest
+## Architecture Philosophy
 
 Refer to [Components](0003-components.md).
 
@@ -33,6 +34,16 @@ This solution is intentionally structured to demonstrate several modern architec
 - Redis Cache-Aside pattern: Redis is used as a distributed cache with the cache-aside strategy. Application code populates and invalidates the cache explicitly, improving read performance while keeping the source of truth in the database.
 - CQRS (Command Query Responsibility Segregation): The project separates write operations (commands) and read operations (queries) in the Application layer, enabling independent scaling and clearer intent for modifications versus reads.
 - SOLID Principles: The codebase follows SOLID design principles to promote maintainability, testability, and clean separation of concerns across layers (API, Application, Infrastructure).
+
+## Architecture Philosophy
+We follow Clean Architecture with CQRS separation:
+- **Domain** has zero dependencies — pure business logic
+- **Application** orchestrates use cases via Mediator handlers
+- **Infrastructure** implements interfaces defined in Application
+- **Api** is thin — just endpoint definitions and DI wiring
+
+Why CQRS? We need different read/write models for performance.
+Why Mediator? Decouples handlers from HTTP layer, enables pipeline behaviors, source-generated for better performance.
 
 ## Constraints
 The changes in the solution must be done within the following architectural, behavioral, and structural constraints to ensure all generated code aligns with the system’s design principles.
