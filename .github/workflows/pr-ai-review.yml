@@ -26,7 +26,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r scripts/requirements.txt
+        run: pip install -r Scripts/requirements.txt
 
       - name: Get PR diff
         run: git diff origin/main...HEAD > pr_diff.txt
@@ -36,7 +36,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          REVIEW=$(python scripts/ai_review.py pr_diff.txt)
+          REVIEW=$(python Scripts/ai_review.py pr_diff.txt)
           echo "review<<EOF" >> $GITHUB_OUTPUT
           echo "$REVIEW" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
