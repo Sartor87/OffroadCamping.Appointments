@@ -1,18 +1,16 @@
 ﻿import sys
 import os
-import google.generativeai as genai
+from pathlib import Path
+from google import genai
 
 def load_diff(path: str) -> str:
-    """Reads the diff file produced by the GitHub Action."""
     try:
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     except Exception as ex:
         return f"Failed to read diff file: {ex}"
 
-
 def build_prompt(diff: str) -> str:
-    """Creates the prompt sent to Gemini."""
     return f"""
 You are an expert senior software engineer performing a pull request code review.
 
@@ -34,34 +32,46 @@ Git Diff:
 
 """
 
-
-def run_gemini_review(diff: str) -> str:
-    """Sends the diff to Gemini and returns the review text."""
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        return "❌ GEMINI_API_KEY is missing."
-
-    genai.configure(api_key=api_key)
-
-    model = genai.GenerativeModel("gemini-pro")
+def run_gemini_review(diff: str, api_key: str) -> str:
+    client = genai.Client(api_key=api_key)
 
     prompt = build_prompt(diff)
-    response = model.generate_content(prompt)
+
+    response = client.models.generate_content(
+        model="gemini-3-flash-preview", contents=prompt
+    )
 
     return response.text.strip()
 
-
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python ai_review.py <diff_file>")
+        print("Usage: python ai_review.py <diff_file> [--api-key <key>]")
         sys.exit(1)
 
     diff_path = sys.argv[1]
-    diff = load_diff(diff_path)
+    pathExists = Path(diff_path)
+    diff = None
 
-    review = run_gemini_review(diff)
+    if pathExists.exists():
+        diff = load_diff(diff_path)
+    else: 
+        diff = diff_path
+
+    # Optional: --api-key argument
+    api_key = None
+    if "--api-key" in sys.argv:
+        idx = sys.argv.index("--api-key")
+        if idx + 1 < len(sys.argv):
+            api_key = sys.argv[idx + 1]
+
+    # Fallback to environment variable if no CLI key provided
+    if not api_key:
+        api_key = os.getenv("GEMINI_API_KEY")
+
+    print("API IS " + ("Provided" if api_key else "Not Provided"))
+
+    review = run_gemini_review(diff, api_key)
     print(review)
-
 
 if __name__ == "__main__":
     main()
