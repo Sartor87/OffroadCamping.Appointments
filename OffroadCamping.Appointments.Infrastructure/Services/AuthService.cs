@@ -28,9 +28,7 @@ namespace OffroadCamping.Appointments.Infrastructure.Services
             {
                 return null;
             }
-            user.Email = request.Email;
-            user.Username = request.Username;
-            user.Role = request.Role;
+            user.UpdateUser(request.Email, request.Username, request.Role);
             context.Users.Update(user);
             await context.SaveChangesAsync();
             return user;
@@ -57,8 +55,6 @@ namespace OffroadCamping.Appointments.Infrastructure.Services
 
         public async Task<User?> RegisterAsync(UserDto request)
         {
-            var canConnect = context.Database.CanConnect();
-
             if (await context.Users.AnyAsync(u => u.Username.ToLower() == request.Username.ToLower()))
             {
                 return null;
@@ -68,9 +64,7 @@ namespace OffroadCamping.Appointments.Infrastructure.Services
 
             var hashedPassword = new PasswordHasher<User>().HashPassword(user, request.Password);
 
-            user.Username = request.Username;
-            user.Role = request.Role;
-            user.PasswordHash = hashedPassword;
+            user.UpdateUser(user.Email, request.Username, request.Role, hashedPassword);
 
             context.Users.Add(user);
             await context.SaveChangesAsync();
@@ -111,8 +105,8 @@ namespace OffroadCamping.Appointments.Infrastructure.Services
         private async Task<string> GenerateAndSaveRefreshTokenAsync(User user)
         {
             var refreshToken = GenerateRefreshToken();
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(10);
+            user.RefreshUserToken(refreshToken, DateTime.UtcNow.AddMinutes(10));
+            context.Users.Update(user);
             await context.SaveChangesAsync();
             return refreshToken;
         }

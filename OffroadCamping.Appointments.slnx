@@ -32,4 +32,5 @@
   <Folder Name="/src/SharedKernel/">
     <Project Path="OffroadCamping.Appointments.SharedKernel/OffroadCamping.Appointments.SharedKernel.csproj" Id="80003fa1-71a9-40c8-ad62-a8b1a075e5c0" />
   </Folder>
+  <Project Path="OffroadCamping.Appointments.ArchitectureTests/OffroadCamping.Appointments.ArchitectureTests.csproj" Id="f3715e99-22b6-457b-aa12-92082a7ecd42" />
 </Solution>

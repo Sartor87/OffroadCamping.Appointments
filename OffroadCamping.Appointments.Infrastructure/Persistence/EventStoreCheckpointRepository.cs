@@ -21,8 +21,8 @@ namespace OffroadCamping.Appointments.Infrastructure.Persistence
 
         public async Task IncrementCheckpoint(string streamName)
         {
-            var checkpoint = _context.EventStoreCheckpoints.First(x => x.StreamName == streamName);
-            checkpoint.Position++;
+            var checkpoint = await _context.EventStoreCheckpoints.FirstAsync(x => x.StreamName == streamName);
+            checkpoint.UpdatePosition(checkpoint.Position + 1);
             await _context.SaveChangesAsync();
         }
     }
