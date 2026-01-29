@@ -1,17 +1,34 @@
 ﻿namespace OffroadCamping.Appointments.Domain.User
 {
-    public class User: BaseEntity
+    public class User : BaseEntity
     {
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
+        public string Username { get; private set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
+        public string PasswordHash { get; private set; } = string.Empty;
 
-        public string Role { get; set; } = string.Empty;
+        public string Role { get; private set; } = string.Empty;
 
-        public string? InternalSystemUserId { get; set; }
+        public string? InternalSystemUserId { get; private set; }
 
-        public string? RefreshToken { get; set; }
+        public string? RefreshToken { get; private set; }
 
-        public DateTime? RefreshTokenExpiryTime { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; private set; }
+
+        public void UpdateUser(string newEmail, string newUserName, string newRole, string newHashedPassword = "")
+        {
+
+            this.Username = newUserName;
+            this.Email = newEmail;
+            this.PasswordHash = String.IsNullOrWhiteSpace(newHashedPassword) ? this.PasswordHash : newHashedPassword;
+            this.Role = newRole;
+        }
+
+        public void RefreshUserToken(string refreshToken, DateTime tokenExpiryTime)
+        {
+
+            this.RefreshToken = refreshToken;
+            this.RefreshTokenExpiryTime = tokenExpiryTime;
+            
+        }
     }
 }

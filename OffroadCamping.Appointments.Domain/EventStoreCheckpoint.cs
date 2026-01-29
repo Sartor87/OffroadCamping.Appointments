@@ -6,8 +6,13 @@ namespace OffroadCamping.Appointments.Domain
     {
         [Required]
         [MaxLength(100)]
-        public string StreamName { get; init; } = "appointments";
+        public string StreamName { get; private init; } = "appointments";
 
-        public long Position { get; set; }
+        public long Position { get; private set; }
+
+        public void UpdatePosition(long newPosition)
+        {
+            this.Position = newPosition;
+        }
     }
 }

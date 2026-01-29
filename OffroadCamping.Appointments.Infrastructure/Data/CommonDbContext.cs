@@ -22,8 +22,8 @@ namespace OffroadCamping.Appointments.Infrastructure.Data
 
             foreach (var entity in createdEntities)
             {
-                entity.CreatedAt = time;
-                entity.UpdatedAt = time;
+                entity.SetCreatedAt(time);
+                entity.SetUpdatedAt(time);
             }
 
             var updatedEntities = ChangeTracker.Entries()
@@ -34,7 +34,7 @@ namespace OffroadCamping.Appointments.Infrastructure.Data
 
             foreach (var entity in updatedEntities)
             {
-                entity.UpdatedAt = time;
+                entity.SetUpdatedAt(time);
             }
 
             return base.SaveChangesAsync(cancellationToken);
